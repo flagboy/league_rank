@@ -139,13 +139,13 @@ console.log('8位以内に入れば昇級 (=3人に抜かれなければ)');
 console.log('='.repeat(60));
 
 const cs1 = calculate([
-  { id: '1', name: '速水(5位)', pts: 110, table: 2, isSelf: false, isBorder: false },
-  { id: '2', name: '冨本(6位)', pts: 100, table: 1, isSelf: true, isBorder: false },
-  { id: '3', name: '西園(7位)', pts: 90,  table: 8, isSelf: false, isBorder: false },
-  { id: '4', name: '山本(8位)', pts: 80,  table: 3, isSelf: false, isBorder: true },  // ボーダー
-  { id: '5', name: '張替(9位)', pts: 75,  table: 7, isSelf: false, isBorder: false },
-  { id: '6', name: '高島(10位)', pts: 55, table: 3, isSelf: false, isBorder: false },
-  { id: '7', name: '望月(11位)', pts: 45, table: 6, isSelf: false, isBorder: false },
+  { id: '1', name: '速水(5位)', pts: 110, table: 'B', isSelf: false, isBorder: false },
+  { id: '2', name: '冨本(6位)', pts: 100, table: 'A', isSelf: true, isBorder: false },
+  { id: '3', name: '西園(7位)', pts: 90,  table: 'H', isSelf: false, isBorder: false },
+  { id: '4', name: '山本(8位)', pts: 80,  table: 'C', isSelf: false, isBorder: true },  // ボーダー
+  { id: '5', name: '張替(9位)', pts: 75,  table: 'G', isSelf: false, isBorder: false },
+  { id: '6', name: '高島(10位)', pts: 55, table: 'C', isSelf: false, isBorder: false },
+  { id: '7', name: '望月(11位)', pts: 45, table: 'F', isSelf: false, isBorder: false },
 ]);
 
 console.log(`ボーダー位置(borderIdx): ${cs1.borderIdx}`);
@@ -196,11 +196,11 @@ console.log('='.repeat(60));
 //   self=3着: 千貫=連対(抜かれる前提), 浅井=連対, 綱川=連対, 大川=連対 (同卓連対×2=1.1)
 //   self=4着: 千貫=always, 浅井=4着回避, 綱川=4着回避, 大川=4着回避 (同卓4着回避×2)
 const cs2 = calculate([
-  { id: '1', name: '畠(3位)',   pts: 100, table: 3, isSelf: true, isBorder: false },
-  { id: '2', name: '千貫(4位)', pts: 90,  table: 3, isSelf: false, isBorder: false },
-  { id: '3', name: '浅井(5位)', pts: 80,  table: 2, isSelf: false, isBorder: true },  // ボーダー
-  { id: '4', name: '綱川(6位)', pts: 78,  table: 1, isSelf: false, isBorder: false },
-  { id: '5', name: '大川(7位)', pts: 76,  table: 1, isSelf: false, isBorder: false },
+  { id: '1', name: '畠(3位)',   pts: 100, table: '3', isSelf: true, isBorder: false },
+  { id: '2', name: '千貫(4位)', pts: 90,  table: '3', isSelf: false, isBorder: false },
+  { id: '3', name: '浅井(5位)', pts: 80,  table: '2', isSelf: false, isBorder: true },  // ボーダー
+  { id: '4', name: '綱川(6位)', pts: 78,  table: '1', isSelf: false, isBorder: false },
+  { id: '5', name: '大川(7位)', pts: 76,  table: '1', isSelf: false, isBorder: false },
 ]);
 
 console.log(`ボーダー位置(borderIdx): ${cs2.borderIdx}`);
