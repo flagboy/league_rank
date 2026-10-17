@@ -187,6 +187,18 @@
 
     #result { display: none; }
     .error-msg { color: var(--danger); font-size: 0.82rem; padding: 8px; text-align: center; }
+
+    .auto-calc-note { font-size: 0.8rem; color: var(--primary); margin-bottom: 8px; }
+    .input-status {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #fef5e7;
+      border-left: 4px solid var(--warning);
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .input-status:empty { display: none; }
+    .input-status ul { margin: 4px 0 0 1.2em; }
   </style>
 </head>
 <body>
@@ -197,6 +209,7 @@
 <!-- 入力 -->
 <div class="card">
   <div class="card-title">ボーダー付近の選手を入力</div>
+  <p class="auto-calc-note">入力すると自動で計算され、下に結果が表示されます（計算ボタンはありません）。</p>
   <div style="overflow-x: auto;">
     <table class="input-table" id="inputTable">
       <thead>
@@ -215,6 +228,7 @@
   <div class="btn-row">
     <button class="btn btn-add" onclick="addRow()">+ 追加</button>
   </div>
+  <div class="input-status" id="inputStatus"></div>
   <p class="note">※ ポイント: 各選手の現在の持ちポイント / 卓番号: 最終戦の卓番号 / ボーダー: 昇級or残留ラインの選手 / 自分: あなた自身</p>
 </div>
 
@@ -305,7 +319,7 @@ function addRow(pts, table, isBorder, isSelf) {
   `;
   tbody.appendChild(tr);
   tr.querySelectorAll('input').forEach(el => el.addEventListener('change', onInputChange));
-  tr.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', onInputChange));
+  tr.querySelectorAll('input[type=number], input[type=text]').forEach(el => el.addEventListener('input', onInputChange));
   highlightRows();
   calculate();
 }
@@ -356,6 +370,41 @@ function getAllEntries() {
     });
   });
   return entries;
+}
+
+// 計算に足りない入力を列挙
+function getMissingInputs(entries) {
+  const missing = [];
+  const borderVal = document.querySelector('input[name="border"]:checked')?.value;
+  const selfVal = document.querySelector('input[name="self"]:checked')?.value;
+
+  document.querySelectorAll('#inputBody tr').forEach((tr, i) => {
+    const id = tr.dataset.id;
+    const hasPts = !isNaN(parseFloat(tr.querySelector('.pt-input').value));
+    const hasTable = tr.querySelector('.table-input').value.trim() !== '';
+    const isMarked = id === selfVal || id === borderVal;
+    // 完全に空で、自分・ボーダーにも選ばれていない行は無視
+    if (!hasPts && !hasTable && !isMarked) return;
+    const lacks = [];
+    if (!hasPts) lacks.push('ポイント');
+    if (!hasTable) lacks.push('卓番号');
+    if (lacks.length) missing.push(`#${i + 1} の${lacks.join('と')}を入力してください`);
+  });
+
+  if (!selfVal) missing.push('「自分」の列であなたの行を選んでください');
+  if (!borderVal) missing.push('「ボーダー」の列でボーダーの選手を選んでください');
+  if (entries.length < 2) missing.push('ポイントと卓番号の入った選手を2人以上入力してください');
+  return missing;
+}
+
+function renderInputStatus(missing) {
+  const el = document.getElementById('inputStatus');
+  if (missing.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = '結果を表示するには、次の入力が必要です：<ul>'
+    + missing.map(m => `<li>${m}</li>`).join('') + '</ul>';
 }
 
 // 条件判定：personがselfより上に行く着順を返す
@@ -428,8 +477,10 @@ function calculate() {
 
   if (!selfEntry || !borderEntry || entries.length < 2) {
     resultDiv.style.display = 'none';
+    renderInputStatus(getMissingInputs(entries));
     return;
   }
+  renderInputStatus([]);
 
   resultDiv.style.display = 'block';
 
